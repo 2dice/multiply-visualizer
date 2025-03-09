@@ -20,7 +20,7 @@
   - ESLintとPrettierが正常に動作し、コードの品質チェックとフォーマットが行われることを確認する。
   - `npm run lint` や `npm run format` などのコマンドが正常に実行できることを確認する。
 
-## Step 4: Playwright 導入
+## Step 4: Playwright 導入 (done)
 
 - **概要**: Playwrightを導入し、設定、動作確認を行う。
 - **確認方法**:

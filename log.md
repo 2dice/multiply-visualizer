@@ -35,3 +35,15 @@
 ### 今後の留意点
 
 - 特になし。
+## Step 4 (2025/03/09)
+
+### うまくいった手法
+
+- `cd my-project && npm install -D playwright @playwright/test` コマンドで、Playwrightとテストフレームワークをインストールできた。
+- `npx playwright install` コマンドで、必要なブラウザをインストールできた。
+- `my-project/tests/example.spec.ts` ファイルを作成し、簡単なテストを記述できた。
+- `cd my-project && npx playwright test` コマンドで、テストを実行し、成功することを確認できた。
+
+### 今後の留意点
+- コマンド実行時に`&amp;&amp;`ではなく`&&`を使用する。
+- `npm run dev` はユーザーが実行し、`npx playwright test` はRooが実行する。
