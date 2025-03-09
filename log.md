@@ -11,3 +11,14 @@
 ### 今後の留意点
 
 - 特になし。
+## Step 2 (2025/03/09)
+
+### うまくいった手法
+
+- `vite.config.js` に `base: './'` と `build: { outDir: '../docs' }` を設定することで、GitHub Pages での公開に成功した。
+- `package.json` に `"homepage": "https://2dice.github.io/multiply-visualizer/"` を追加することで、GitHub Pages での公開に対応できた。
+- `cd my-project && npm run build && cd .. && git add docs && git commit -m "Deploy to GitHub Pages with docs folder" && git push origin main` コマンドで、`docs` ディレクトリをGitHub Pages にデプロイできた。
+
+### 今後の留意点
+
+- `git add` するディレクトリを間違えないように注意する。

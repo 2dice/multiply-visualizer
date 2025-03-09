@@ -39,7 +39,7 @@
     * `step.md`の該当ステップの内容が実作業と異なる場合、必要に応じて更新すること。
     * `step.md`の次以降のステップの内容が、適切な粒度になっていることを確認し、必要に応じて修正すること。
     * `notes.md`を実際にステップを実行した経験を元に更新すること。
-    * ステップの中で行ったgit commitを一つのcommitにまとめ、詳細なコミットメッセージを記載する。(ユーザーに方法とコミットメッセージを教えて依頼する)
+    * ステップの中で行ったgit commitを一つのcommitにまとめ、詳細なコミットメッセージを記載する。(ユーザーに詳細な方法とコミットメッセージを教えて依頼する)
 
 ## ユーザー特有の注意事項
 
@@ -61,3 +61,13 @@
 ## 開発環境特有の注意事項
 *   ターミナルでのコマンド実行後、カーソル操作やエディタでの記入などの操作が必要な場合はユーザーに内容を指示すること。
 *   開発者ツールのコンソールログやターミナルのログが読み取れない場合、ユーザーに具体的に指示して内容をコピーするよう指示すること。
+
+## GitHub Pages デプロイに関する注意事項
+
+*   ViteプロジェクトをGitHub Pagesにデプロイする際は、`vite.config.js`に`base`と`build.outDir`の設定が必要。
+    *   `base`は、`./` (相対パス)に設定する。
+    *   `build.outDir`は、`../docs`に設定する。
+*   `package.json`に`homepage`プロパティを追加する。
+    *   `"homepage": "https://<GitHubのユーザー名>.github.io/<リポジトリ名>/"`
+*   GitHub Pagesの設定で、Sourceを`main`ブランチ、ディレクトリを`/docs`に設定する。
+*   デプロイコマンドは、`cd my-project && npm run build && cd .. && git add docs && git commit -m "Deploy to GitHub Pages with docs folder" && git push origin main`
