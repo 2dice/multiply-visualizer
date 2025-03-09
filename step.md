@@ -13,7 +13,7 @@
 - **確認方法**:
   - GitHub PagesでWebサイトが公開され、ブラウザで表示できることを確認する。
 
-## Step 3: ESLint, Prettier 導入
+## Step 3: ESLint, Prettier 導入 (done)
 
 - **概要**: ESLintとPrettierを導入し、設定、動作確認を行う。
 - **確認方法**:

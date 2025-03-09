@@ -22,3 +22,16 @@
 ### 今後の留意点
 
 - `git add` するディレクトリを間違えないように注意する。
+## Step 3 (2025/03/09)
+
+### うまくいった手法
+
+- `cd my-project && npm install --save-dev eslint prettier eslint-plugin-react eslint-config-prettier` コマンドで、ESLintとPrettier、関連パッケージをインストールできた。
+- `.eslintrc.cjs` ファイルを作成し、ESLintの設定を記述できた。
+- `.prettierrc.cjs` ファイルを作成し、Prettierの設定を記述できた。
+- `package.json` に `lint` と `format` スクリプトを追加し、`build` スクリプトに `npm run lint && npm run format` を追加できた。
+- `npm run lint` と `npm run format` コマンドが正常に実行できることを確認できた。
+
+### 今後の留意点
+
+- 特になし。
