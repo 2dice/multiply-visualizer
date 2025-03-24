@@ -9,7 +9,7 @@
     "build": "npm run lint && npm run format && vite build",
     "lint": "eslint . --ext .js,.jsx,.cjs",
     "format": "prettier --write .",
-    "test": "npx playwright test",
+    "test": "npx playwright test --browser-arg=--disk-cache-size=0 --browser-arg=--media-cache-size=0",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -1,0 +1,51 @@
+.slider-container {
+  display: flex;
+  align-items: center;
+  width: 320px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.slider-button {
+  width: 30px; /* width を少し小さく */
+  height: 30px; /* height を少し小さく */
+  background-color: #007bff; /* 青色に変更 */
+  color: white; /* 文字色を白に変更 */
+  border-radius: 50%; /* 丸みを帯びた形状に */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* つやのある感じを出すためにbox-shadowを追加 */
+  cursor: pointer;
+  margin: 0 5px;
+  display: flex; /* アイコンを中央に配置するため */
+  align-items: center; /* アイコンを中央に配置するため */
+  justify-content: center; /* アイコンを中央に配置するため */
+  padding: 0; /* padding を削除 */
+}
+
+.slider-button:hover {
+  background-color: #0056b3; /* ホバー時に濃い青色に変更 */
+}
+
+.slider-button svg {
+  width: 20px; /* アイコンのサイズを調整 */
+  height: 20px; /* アイコンのサイズを調整 */
+}
+
+.slider-input {
+  flex: 1;
+  height: 20px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #ddd;
+  border-radius: 5px;
+  outline: none;
+}
+
+.slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  background-color: #007bff;
+  border-radius: 50%;
+  cursor: pointer;
+}

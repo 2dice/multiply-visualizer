@@ -8,6 +8,22 @@ function App() {
   const [activeTab, setActiveTab] = useState(0);
   const [sliderValue, setSliderValue] = useState(50);
 
+  const handleSliderChange = (e) => {
+    setSliderValue(e.target.value);
+  };
+
+  const handleSliderIncrease = () => {
+    if (parseInt(sliderValue, 10) < 100) {
+      setSliderValue(String(parseInt(sliderValue, 10) + 1));
+    }
+  };
+
+  const handleSliderDecrease = () => {
+    if (parseInt(sliderValue, 10) > 0) {
+      setSliderValue(String(parseInt(sliderValue, 10) - 1));
+    }
+  };
+
   return (
     <>
       <div>
@@ -24,7 +40,9 @@ function App() {
             min={0}
             max={100}
             value={sliderValue}
-            onChange={(e) => setSliderValue(e.target.value)}
+            onChange={handleSliderChange}
+            onIncrease={handleSliderIncrease}
+            onDecrease={handleSliderDecrease}
           />
           <p>Slider Value: {sliderValue}</p>
           <Button onClick={() => alert("Button Clicked!")}>Click Me</Button>

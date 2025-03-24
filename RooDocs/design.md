@@ -164,15 +164,15 @@ graph LR
 ### UI改善 (小学生向け)
 
 - **スライダー**:
-    -   width: 300px
-    -   height: 20px
-    -   つまみ(thumb)の大きさ: 30px x 30px
-    -   padding: 上下左右に10px追加し、タッチ領域を拡大
-    -   左右に矢印ボタンを配置。クリックで値を1ずつ増減。
+  - width: 300px
+  - height: 20px
+  - つまみ(thumb)の大きさ: 30px x 30px
+  - padding: 上下左右に10px追加し、タッチ領域を拡大
+  - 左右に矢印ボタンを配置。クリックで値を1ずつ増減。
 - **ボタン**:
-    -   width: 100px
-    -   height: 40px
-    -   padding: 上下左右に10px追加し、タッチ領域を拡大
+  - width: 100px
+  - height: 40px
+  - padding: 上下左右に10px追加し、タッチ領域を拡大
 
 ## 開発ツール
 

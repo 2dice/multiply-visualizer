@@ -66,3 +66,27 @@
 ### 今後の留意点
 
 - 特になし。
+
+## Step 5.1 (2025/03/23)
+
+### うまくいった手法
+
+- `design.md` の UI 改善の仕様に従い、`Slider.jsx` と `Button.jsx` を修正できた。
+- `Slider.jsx` に、左右の矢印ボタンと、スタイル調整用の CSS を追加できた。
+- `Button.jsx` に、スタイル調整用の CSS を追加できた。
+- `App.jsx` を修正し、`Slider` コンポーネントに `onIncrease` と `onDecrease` の props を渡すように変更できた。
+- `tests/example.spec.ts` を修正し、UI 改善後の `Slider` と `Button` の表示と動作を確認するテストを追加できた。
+- `npx playwright test` でテストが成功することを確認できた (最終的には `toBeCloseTo` を使用して誤差を許容するように修正)。
+- `Slider.css` に `box-sizing: border-box;` を追加し、padding を含めた幅で要素のサイズを計算するように修正した (結果的に `width` を `320px` に修正する必要があった)。
+- `App.jsx` の重複 import 文を削除し、lint エラーを解消した。
+- `Slider.jsx` にデバッグ用の表示を追加し、offsetWidth と clientWidth の値を確認することで、CSS が適用されていない原因を特定しようとした (最終的には CSS が適用されていたが、`box-sizing` の理解不足が原因と判明)。
+- スライダーの値が 0 の位置で上矢印ボタンを押すと値が異常に増加していくバグを修正した。
+- スライダーのボタンをテキストから SVG アイコンに変更し、スタイル (青地、白アイコン、丸み、影) を適用した。
+- `tests/example.spec.ts` の `sliderButtonWidth` の期待値を `toBeCloseTo(40, 0)` から `toBeCloseTo(30, 0)` に修正した。
+
+### 今後の留意点
+
+- CSS のスタイリングはまだ仮のものなので、今後デザインに合わせて調整する必要がある。
+- Slider の increase/decrease のテストで、初期値が 50 であることを前提にしているが、これは `App.jsx` の `useState` の初期値に依存しているので、変更があった場合にテストが失敗する可能性がある。初期値を props で渡すように変更するか、テスト内で初期値を設定するように変更することを検討する。
+- `box-sizing: border-box;` の理解を深め、CSS の設計に活かす。
+- Playwright のテストで、offsetWidth や clientWidth のような数値の比較を行う場合は、誤差を考慮して `toBeCloseTo` を使用することを検討する。
