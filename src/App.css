@@ -40,3 +40,11 @@
 .read-the-docs {
   color: #888;
 }
+
+/* GridTab用: ラベルとスライダーを横並びにする */
+.slider-control {
+  display: flex;
+  align-items: center; /* 垂直方向中央揃え */
+  margin-bottom: 15px; /* 下方向のマージン */
+  gap: 10px; /* ラベルとスライダーの間の隙間 */
+}

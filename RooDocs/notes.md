@@ -22,7 +22,7 @@
 
 - 指示が曖昧な場合や、複数の解釈が可能な場合があるため、不明点は確認すること。
 - ユーザーはコマンド実行ごとに新しいターミナルが立ち上がることを好まない。
-- JavaScrotp、GitHub Pagesの設定、Viteの挙動等について、詳細な知識を持っていない。
+- JavaScritp、GitHub Pagesの設定、Viteの挙動等について、詳細な知識を持っていない。
 - Playwrightを導入する目的は、ターミナル(PowerShell)のログをRooが直接読み取って自律的にデバッグを進めるため。
 - `npm run dev`での結果だけでなく、`npm run build`した結果とGithub Pagesでの表示も確認する必要がある。
 

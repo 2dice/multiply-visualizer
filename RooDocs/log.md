@@ -90,3 +90,24 @@
 - Slider の increase/decrease のテストで、初期値が 50 であることを前提にしているが、これは `App.jsx` の `useState` の初期値に依存しているので、変更があった場合にテストが失敗する可能性がある。初期値を props で渡すように変更するか、テスト内で初期値を設定するように変更することを検討する。
 - `box-sizing: border-box;` の理解を深め、CSS の設計に活かす。
 - Playwright のテストで、offsetWidth や clientWidth のような数値の比較を行う場合は、誤差を考慮して `toBeCloseTo` を使用することを検討する。
+
+## Step 6.1 (2025/03/30)
+
+### うまくいった手法
+
+- `src/components/GridTab.jsx` を作成し、基本的な UI 要素（ラベル、スライダー、表示エリア）を配置できた。
+- `src/App.jsx` を修正し、`GridTab` コンポーネントをタブ UI に組み込めた。
+- `tests/gridTab.spec.ts` を作成し、グリッドタブの UI 要素が表示されることを確認する Playwright テストを記述できた。
+- 開発サーバーのエラーログとブラウザコンソールを確認し、`GridTab.jsx` のインポートパスの間違いを特定・修正できた。
+- Playwright の Strict Mode 違反エラーを解決するため、タブの特定方法を `locator('.tab', { hasText: '...' })` から `getByRole('button', { name: '...', exact: true })` に変更した。
+- Playwright の `getByLabel` が機能しない原因を特定するため、`Slider.jsx` を確認し、`id` プロパティの受け渡しと設定が漏れていたことを発見・修正できた。
+- Playwright のテストで `getByLabel` を使用するように修正し、スライダー要素の特定をより堅牢にした。
+- ユーザーの目視確認で発覚したレイアウトの問題（ラベルとスライダーが縦に並ぶ）を、`GridTab.jsx` に CSS クラスを追加し、`App.css` に Flexbox を使ったスタイルを定義することで解決できた。
+- 最終的に、`npm run lint`, `npm run format`, `npx playwright test` がすべて成功することを確認できた。
+
+### 今後の留意点
+
+- Playwright テストで要素が見つからない場合、セレクタの問題だけでなく、開発サーバーのエラーや React コンポーネントのレンダリングエラーも疑う必要がある。
+- `getByLabel` を使用する場合、対象の入力要素に正しく `id` が設定され、`<label>` の `htmlFor` と一致していることを確認する。
+- UI のレイアウト調整には CSS (Flexbox や Grid など) の知識が必要になる。
+- 長時間の中断後は、開発サーバーが停止している可能性があるので、再開時に確認する。

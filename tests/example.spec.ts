@@ -1,74 +1,72 @@
 import { test, expect } from "@playwright/test";
 
-test("Check UI components and interactions", async ({ page }) => {
+test("Check App structure and basic tab interactions", async ({ page }) => {
   await page.goto("http://localhost:5173/");
 
-  // Check for console errors
+  // Check for console errors or warnings during page load and initial interaction
+  const messages: ("error" | "warning")[] = []; // 型を明示的に指定
   page.on("console", (msg) => {
-    if (msg.type() === "error" || msg.type() === "warning") {
-      console.log(`Console ${msg.type()}: ${msg.text()}`);
-      expect(msg.type()).not.toBe("error");
-      expect(msg.type()).not.toBe("warning");
+    const msgType = msg.type();
+    if (msgType === "error" || msgType === "warning") {
+      console.log(`[Test Console Check] ${msgType}: ${msg.text()}`);
+      messages.push(msgType as "error" | "warning"); // 型アサーションを追加
     }
   });
 
-  // Check if tabs are visible
-  const tab1 = page.locator(".tab", { hasText: "Tab 1" });
-  const tab2 = page.locator(".tab", { hasText: "Tab 2" });
-  await expect(tab1).toBeVisible();
-  await expect(tab2).toBeVisible();
+  // Wait for the main app container or tabs container to be visible
+  const tabsContainer = page.locator(".tabs-container"); // App.jsx で追加したクラス名
+  await expect(tabsContainer).toBeVisible({ timeout: 10000 }); // 10秒待機
+  console.log("[Test Debug] Tabs container is visible.");
 
-  // --- Slider Component Tests ---
-  const sliderContainer = page.locator(".slider-container");
-  const sliderButtons = page.locator(".slider-button");
-  const sliderInput = page.locator(".slider-input");
+  // Check if initial tabs are visible (using getByRole with exact match)
+  const gridTabButton = page.getByRole("button", {
+    name: "グリッド",
+    exact: true,
+  });
+  const gridDecompositionTabButton = page.getByRole("button", {
+    name: "グリッド分解",
+    exact: true,
+  });
+  const areaRectangleTabButton = page.getByRole("button", {
+    name: "面積(長方形)",
+    exact: true,
+  });
+  // Add checks for other tabs if needed
 
-  await expect(sliderContainer).toBeVisible();
-  expect(await sliderButtons.count()).toBe(2);
-  await expect(sliderInput).toBeVisible();
+  await expect(gridTabButton).toBeVisible();
+  await expect(gridDecompositionTabButton).toBeVisible();
+  await expect(areaRectangleTabButton).toBeVisible();
 
-  // Get computed styles
-  const sliderContainerWidth = await sliderContainer.evaluate(
-    (el) => getComputedStyle(el).width
+  // Verify initial content (GridTab should be active by default)
+  await expect(
+    page.getByRole("heading", { name: "グリッドタブ" })
+  ).toBeVisible();
+
+  // --- Slider and Button tests removed, as they are now part of specific tab components ---
+
+  // Switch to "グリッド分解" tab and check placeholder content
+  await gridDecompositionTabButton.click();
+  const gridDecompositionContent = page.getByText(
+    "グリッド分解タブ Content (仮)"
   );
-  const sliderButtonWidth = await sliderButtons
-    .nth(0)
-    .evaluate((el) => getComputedStyle(el).width);
-  const sliderInputHeight = await sliderInput.evaluate(
-    (el) => getComputedStyle(el).height
+  await expect(gridDecompositionContent).toBeVisible();
+  // Ensure GridTab content is no longer visible
+  await expect(
+    page.getByRole("heading", { name: "グリッドタブ" })
+  ).not.toBeVisible();
+
+  // Switch back to "グリッド" tab
+  await gridTabButton.click();
+  await expect(
+    page.getByRole("heading", { name: "グリッドタブ" })
+  ).toBeVisible();
+  await expect(gridDecompositionContent).not.toBeVisible();
+
+  // Final check for console errors/warnings accumulated during the test
+  expect(messages.filter((type) => type === "error")).toHaveLength(0);
+  expect(messages.filter((type) => type === "warning")).toHaveLength(0);
+
+  console.log(
+    "[Test Log] App structure and basic tab interaction test completed successfully."
   );
-
-  expect(parseFloat(sliderContainerWidth)).toBeCloseTo(320, 0);
-  expect(parseFloat(sliderButtonWidth)).toBeCloseTo(30, 0);
-  expect(parseFloat(sliderInputHeight)).toBeCloseTo(20, 0);
-  await expect(sliderInput).toHaveAttribute("type", "range");
-
-  // Test slider increase/decrease
-  let initialSliderValue = parseInt(await sliderInput.inputValue());
-  await sliderButtons.nth(1).click(); // Increase button
-  expect(parseInt(await sliderInput.inputValue())).toBe(initialSliderValue + 1);
-  await sliderButtons.nth(0).click(); // Decrease button
-  expect(parseInt(await sliderInput.inputValue())).toBe(initialSliderValue);
-
-  // --- Button Component Tests ---
-  const button = page.locator(".button");
-  await expect(button).toBeVisible();
-
-  const buttonWidth = await button.evaluate((el) => getComputedStyle(el).width);
-  const buttonHeight = await button.evaluate(
-    (el) => getComputedStyle(el).height
-  );
-
-  expect(parseFloat(buttonWidth)).toBeCloseTo(100, 0);
-  expect(parseFloat(buttonHeight)).toBeCloseTo(40, 0);
-
-  // Switch to Tab 2 and check content
-  await tab2.click();
-  const tab2Content = page.locator("p", { hasText: "Tab 2 Content" });
-  await expect(tab2Content).toBeVisible();
-
-  // Switch back to Tab 1
-  await tab1.click();
-
-  console.log("Test completed successfully.");
 });

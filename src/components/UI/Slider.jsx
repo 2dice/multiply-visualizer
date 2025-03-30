@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import "./Slider.css";
 
-const Slider = ({ min, max, value, onChange, onIncrease, onDecrease }) => {
+// id プロパティを受け取るように修正
+const Slider = ({ id, min, max, value, onChange, onIncrease, onDecrease }) => {
   const offsetWidthSpan = useRef(null);
   const clientWidthSpan = useRef(null);
 
@@ -27,6 +28,7 @@ const Slider = ({ min, max, value, onChange, onIncrease, onDecrease }) => {
         </svg>
       </button>
       <input
+        id={id} // 受け取った id を設定
         type="range"
         min={min}
         max={max}
