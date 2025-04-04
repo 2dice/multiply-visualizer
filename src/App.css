@@ -1,8 +1,10 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
   padding: 0;
-  text-align: center;
+  /* text-align: center; */ /* Remove text centering for the root */
+  display: flex; /* Use flex for full height */
+  flex-direction: column; /* Stack children vertically */
+  min-height: 100vh; /* Ensure root takes full viewport height */
+  overflow: hidden; /* Prevent root from scrolling */
 }
 
 .logo {
@@ -41,10 +43,114 @@
   color: #888;
 }
 
-/* GridTab用: ラベルとスライダーを横並びにする */
-.slider-control {
+/* --- Tab Container Styling --- */
+.tabs-container {
   display: flex;
-  align-items: center; /* 垂直方向中央揃え */
+  justify-content: center; /* Center tabs horizontally */
+  margin-bottom: 10px; /* Reduce space below tabs */
+  flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+  padding: 10px 10px 0 10px; /* Add padding, remove bottom margin */
+  flex-shrink: 0; /* Prevent tabs from shrinking */
+}
+
+/* --- GridTab Specific Styles --- */
+
+/* Reset h2 margin */
+.grid-tab-container h2 {
+  margin-top: 0;
+  margin-bottom: 10px; /* Control space below heading */
+  text-align: center; /* Center heading text */
+  flex-shrink: 0; /* Prevent heading from shrinking */
+}
+
+/* GridTab用: ラベルとスライダー */
+.slider-control {
   margin-bottom: 15px; /* 下方向のマージン */
-  gap: 10px; /* ラベルとスライダーの間の隙間 */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center label above slider */
+  /* width: auto; */ /* Let grid handle width */
+  width: 100%; /* Make control take full width of grid column */
+}
+
+/* Position sliders using grid */
+.slider-control:nth-child(1) {
+  grid-column: 1 / span 2; /* Place in first quarter (approx) */
+  justify-self: center; /* Center within the grid column area */
+}
+.slider-control:nth-child(2) {
+  grid-column: 3 / span 2; /* Place in third quarter (approx) */
+  justify-self: center; /* Center within the grid column area */
+}
+
+.grid-tab-container {
+  width: 100%; /* Ensure it takes full width */
+  box-sizing: border-box; /* Include padding in width calculation */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  padding: 20px; /* Add overall padding */
+  justify-content: flex-start; /* Align to top */
+  flex-grow: 1; /* Allow container to grow */
+  /* overflow: hidden; */ /* Remove overflow hidden */
+}
+
+.grid-and-controls {
+  display: flex;
+  flex-direction: column; /* Stack grid and controls vertically */
+  width: 95%; /* Use slightly less than full width for some horizontal spacing */
+  max-width: 1400px; /* Allow wider content */
+  align-items: stretch; /* Make children take full width */
+  flex-grow: 1; /* Allow this container to grow */
+  justify-content: flex-start;
+  /* overflow: hidden; */ /* Remove overflow hidden */
+  overflow-y: auto; /* Allow vertical scroll if needed */
+  padding-bottom: 10px; /* Add padding at the bottom inside scroll */
+}
+
+.grid-display-area {
+  width: 100%; /* Take full width of parent */
+  box-sizing: border-box;
+  padding: 15px; /* Add internal padding */
+  border: 1px solid black; /* Keep border for visibility */
+  /* min-height: 40vh; */ /* Remove vh unit */
+  min-height: 250px; /* Set a fixed min-height in px or rem */
+  margin-bottom: 20px; /* Keep space below grid */
+  flex-grow: 1; /* Allow grid area to grow */
+  display: flex; /* To center placeholder text */
+  align-items: center; /* To center placeholder text */
+  justify-content: center; /* To center placeholder text */
+  flex-shrink: 0; /* Prevent shrinking initially */
+}
+
+.slider-controls-container {
+  width: 100%; /* Take full width of parent (.grid-and-controls) */
+  margin-top: 20px; /* Add space above sliders */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Divide into 4 columns */
+  gap: 20px; /* Add gap between grid items */
+  align-items: start; /* Align items to the start of the grid row */
+  flex-shrink: 0; /* Prevent sliders from shrinking */
+}
+
+.slider-label {
+  /* font-size: 1.5rem; */ /* Use clamp for responsive size */
+  /* font-size: clamp(1.4rem, 2vw + 0.5rem, 1.8rem); */ /* Responsive font size */
+  font-size: clamp(1.4rem, 4vw + 0.5rem, 2.2rem); /* Increase responsiveness */
+  margin-bottom: 5px; /* Add space below label */
+  white-space: nowrap; /* Prevent label text wrapping */
+}
+
+.result-area {
+  text-align: center; /* Center the result text */
+  /* margin-top: auto; */ /* Remove push to bottom */
+  padding-top: 20px; /* Add space above result */
+  padding-bottom: 20px; /* Add padding at the bottom */
+  flex-shrink: 0; /* Prevent result area from shrinking */
+}
+
+.result-text {
+  /* font-size: 2.2rem; */ /* Use clamp for responsive size */
+  /* font-size: clamp(2rem, 3vw + 0.5rem, 2.8rem); */ /* Responsive font size */
+  font-size: clamp(2rem, 5vw + 0.5rem, 3.5rem); /* Increase responsiveness */
 }

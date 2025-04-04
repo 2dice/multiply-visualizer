@@ -1,8 +1,9 @@
 .slider-container {
   display: flex;
   align-items: center;
-  width: 320px;
-  padding: 10px;
+  width: 100%; /* 親要素の幅に追従させる */
+  /* max-width: 400px; */ /* 最大幅を削除 */
+  padding: 10px 0; /* 左右の padding を削除 */
   box-sizing: border-box;
 }
 
@@ -19,6 +20,7 @@
   align-items: center; /* アイコンを中央に配置するため */
   justify-content: center; /* アイコンを中央に配置するため */
   padding: 0; /* padding を削除 */
+  flex-shrink: 0; /* ボタンが縮まないように */
 }
 
 .slider-button:hover {
@@ -31,13 +33,15 @@
 }
 
 .slider-input {
-  flex: 1;
+  flex: 1; /* 利用可能なスペースを埋める */
+  min-width: 80px; /* 最小幅を少し小さく */
   height: 20px;
   -webkit-appearance: none;
   appearance: none;
   background-color: #ddd;
   border-radius: 5px;
   outline: none;
+  margin: 0 5px; /* ボタンとの間にマージンを追加 */
 }
 
 .slider-input::-webkit-slider-thumb {

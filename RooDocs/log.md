@@ -111,3 +111,24 @@
 - `getByLabel` を使用する場合、対象の入力要素に正しく `id` が設定され、`<label>` の `htmlFor` と一致していることを確認する。
 - UI のレイアウト調整には CSS (Flexbox や Grid など) の知識が必要になる。
 - 長時間の中断後は、開発サーバーが停止している可能性があるので、再開時に確認する。
+
+## Step 6.2 (2025/04/05)
+
+### うまくいった手法
+
+- `src/App.css` の `#root` から `max-width`, `margin: auto` を削除し、`src/index.css` の `body` から `display: flex`, `place-items: center` を削除して、アプリ全体の幅制限と中央寄せを解除した。
+- `src/App.css` に `.tabs-container` スタイルを追加し、タブメニューを中央揃えにした。
+- `src/components/GridTab.jsx` の構造を変更し、`src/App.css` に Flexbox と Grid Layout を使用したスタイルを追加して、グリッド表示エリアとスライダーを配置した（グリッドエリア拡大、スライダー左右配置、ラベルをスライダー上部中央に）。
+- `src/components/UI/Slider.css` の `.slider-container` の `width` を `100%` に変更し、スライダーのレスポンシブ対応を行った。
+- `src/App.css` の `.slider-label`, `.result-text` の `font-size` に `clamp()` を使用し、テキストサイズのレスポンシブ対応を行った。
+- `tests/gridTab.spec.ts` を修正し、レイアウト変更（Grid Layout, `align-items: center`）とレスポンシブ対応（`font-size` の `clamp()`）に対応するアサーションを追加・修正した。
+- `apply_diff` が不安定だったため、`write_to_file` を使用して CSS とテストファイルを確実に更新した。
+- 複数回のテストとユーザーによる目視確認を繰り返し、レイアウトの問題（縦スクロールバー、要素間のスペース、レスポンシブ）を段階的に修正した。
+- 最終的に、`npm run lint`, `npm run format`, `npx playwright test` がすべて成功し、ユーザーの目視確認でも問題がないことを確認できた。
+
+### 今後の留意点
+
+- `apply_diff` が失敗する場合は、コンテキスト行数を調整するか、`write_to_file` での全体上書きを検討する。
+- Playwright で CSS の計算値（`rem` や `clamp()` の結果）をテストする場合、具体的なピクセル値ではなく、範囲やパターン（正規表現）でアサーションを行う必要がある。
+- 複雑なレイアウト調整では、一度に多くの変更を加えるのではなく、段階的に修正し、都度テストと目視確認を行う方が確実である。
+- レスポンシブ対応では、テキストだけでなく、他の UI 要素（スライダー、ボタンなど）のサイズも画面サイズに応じて調整することを検討する。
