@@ -1,25 +1,75 @@
-import React, { useState } from "react";
-import Slider from "./UI/Slider"; // パスを修正
+import React, { useState, useEffect } from "react";
+import Slider from "./UI/Slider";
 // import styles from './GridTab.module.css'; // CSSモジュールは後で作成
 
 const GridTab = () => {
-  // 状態管理は Step 6-3 で実装しますが、基本的な動作のために仮実装します
-  const [rows, setRows] = useState(3); // design.md に基づく初期値 (仮)
-  const [cols, setCols] = useState(4); // design.md に基づく初期値 (仮)
+  // 状態管理の実装 (Step 6-3)
+  const [rows, setRows] = useState(3); // design.mdに基づく初期値
+  const [cols, setCols] = useState(4); // design.mdに基づく初期値
+  const [product, setProduct] = useState(rows * cols); // 結果の状態も管理
 
-  // ハンドラーも仮実装
-  const handleRowsChange = (newValue) => {
+  // 行数または列数が変更されたときに自動的に積を更新
+  useEffect(() => {
+    setProduct(rows * cols);
+    console.log(
+      `GridTab: Calculation updated - ${rows} × ${cols} = ${rows * cols}`
+    );
+  }, [rows, cols]);
+
+  // 行数スライダーの値変更ハンドラー
+  const handleRowsChange = (event) => {
+    // eventがNumberの場合もあるので、両方対応する
+    const newValue =
+      typeof event === "object" ? Number(event.target.value) : Number(event);
     setRows(newValue);
-    console.log(`GridTab: Rows changed to ${newValue}`); // デバッグ用ログ
+    console.log(`GridTab: Rows changed to ${newValue}`);
   };
 
-  const handleColsChange = (newValue) => {
+  // 行数増減のハンドラー
+  const handleRowsIncrease = () => {
+    if (rows < 9) {
+      const newValue = rows + 1;
+      setRows(newValue);
+      console.log(`GridTab: Rows increased to ${newValue}`);
+    }
+  };
+
+  const handleRowsDecrease = () => {
+    if (rows > 1) {
+      const newValue = rows - 1;
+      setRows(newValue);
+      console.log(`GridTab: Rows decreased to ${newValue}`);
+    }
+  };
+
+  // 列数スライダーの値変更ハンドラー
+  const handleColsChange = (event) => {
+    // eventがNumberの場合もあるので、両方対応する
+    const newValue =
+      typeof event === "object" ? Number(event.target.value) : Number(event);
     setCols(newValue);
-    console.log(`GridTab: Cols changed to ${newValue}`); // デバッグ用ログ
+    console.log(`GridTab: Cols changed to ${newValue}`);
+  };
+
+  // 列数増減のハンドラー
+  const handleColsIncrease = () => {
+    if (cols < 9) {
+      const newValue = cols + 1;
+      setCols(newValue);
+      console.log(`GridTab: Cols increased to ${newValue}`);
+    }
+  };
+
+  const handleColsDecrease = () => {
+    if (cols > 1) {
+      const newValue = cols - 1;
+      setCols(newValue);
+      console.log(`GridTab: Cols decreased to ${newValue}`);
+    }
   };
 
   return (
-    <div className="grid-tab-container">
+    <div className="grid-tab-container" data-testid="grid-tab-container">
       {" "}
       {/* Main container */}
       <h2>グリッドタブ</h2>
@@ -41,7 +91,10 @@ const GridTab = () => {
         <div className="slider-controls-container">
           {" "}
           {/* Container for both sliders */}
-          <div className="slider-control">
+          <div
+            className="slider-control rows-control"
+            data-testid="rows-control"
+          >
             {" "}
             {/* Existing class */}
             <label htmlFor="rows-slider" className="slider-label">
@@ -54,9 +107,15 @@ const GridTab = () => {
               max={9}
               value={rows}
               onChange={handleRowsChange}
+              onIncrease={handleRowsIncrease}
+              onDecrease={handleRowsDecrease}
+              data-testid="rows-slider"
             />
           </div>
-          <div className="slider-control">
+          <div
+            className="slider-control cols-control"
+            data-testid="cols-control"
+          >
             {" "}
             {/* Existing class */}
             <label htmlFor="cols-slider" className="slider-label">
@@ -69,18 +128,25 @@ const GridTab = () => {
               max={9}
               value={cols}
               onChange={handleColsChange}
+              onIncrease={handleColsIncrease}
+              onDecrease={handleColsDecrease}
+              data-testid="cols-slider"
             />
           </div>
         </div>
       </div>
-      <div className="result-area" style={{ marginTop: "10px" }}>
+      <div
+        className="result-area"
+        style={{ marginTop: "10px" }}
+        data-testid="result-area"
+      >
         {" "}
         {/* Add class */}
         {/* 結果表示エリア (Step 6-4 で更新予定) */}
-        <p className="result-text">
+        <p className="result-text" data-testid="result-text">
           {" "}
           {/* Add class for styling */}
-          式: {rows} × {cols} = {rows * cols}
+          式: {rows} × {cols} = {product}
         </p>
       </div>
     </div>

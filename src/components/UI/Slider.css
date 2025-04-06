@@ -2,54 +2,209 @@
   display: flex;
   align-items: center;
   width: 100%; /* 親要素の幅に追従させる */
-  /* max-width: 400px; */ /* 最大幅を削除 */
-  padding: 10px 0; /* 左右の padding を削除 */
+  padding: 10px 0;
   box-sizing: border-box;
+  position: relative; /* 子要素の配置基準にする */
+  min-height: 50px; /* スライダーの高さを確保 */
+  user-select: none; /* ドラッグ中にテキスト選択されるのを防止 */
+  height: 60px;
 }
 
+/* ボタンスタイル */
 .slider-button {
-  width: 30px; /* width を少し小さく */
-  height: 30px; /* height を少し小さく */
-  background-color: #007bff; /* 青色に変更 */
-  color: white; /* 文字色を白に変更 */
-  border-radius: 50%; /* 丸みを帯びた形状に */
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* つやのある感じを出すためにbox-shadowを追加 */
+  width: 36px;
+  height: 36px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   cursor: pointer;
-  margin: 0 5px;
-  display: flex; /* アイコンを中央に配置するため */
-  align-items: center; /* アイコンを中央に配置するため */
-  justify-content: center; /* アイコンを中央に配置するため */
-  padding: 0; /* padding を削除 */
-  flex-shrink: 0; /* ボタンが縮まないように */
+  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
 }
 
 .slider-button:hover {
-  background-color: #0056b3; /* ホバー時に濃い青色に変更 */
+  background-color: #0056b3;
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.slider-button:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .slider-button svg {
-  width: 20px; /* アイコンのサイズを調整 */
-  height: 20px; /* アイコンのサイズを調整 */
-}
-
-.slider-input {
-  flex: 1; /* 利用可能なスペースを埋める */
-  min-width: 80px; /* 最小幅を少し小さく */
+  width: 20px;
   height: 20px;
-  -webkit-appearance: none;
-  appearance: none;
-  background-color: #ddd;
-  border-radius: 5px;
-  outline: none;
-  margin: 0 5px; /* ボタンとの間にマージンを追加 */
 }
 
-.slider-input::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 30px;
-  height: 30px;
-  background-color: #007bff;
-  border-radius: 50%;
+/* カスタムスライダーのトラック部分 */
+.slider-track {
+  flex: 1;
+  min-width: 100px;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  position: relative;
   cursor: pointer;
+  margin: 0 15px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* スライダーのつまみ部分 */
+.slider-thumb {
+  width: 22px;
+  height: 22px;
+  background-color: #007bff;
+  border: 3px solid white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: grab;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slider-thumb:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  background-color: #0056b3;
+}
+
+.slider-thumb:active {
+  cursor: grabbing;
+  transform: translateY(-50%) scale(1.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* ドラッグ中は全体のカーソルを変更 */
+body.slider-dragging {
+  cursor: grabbing !important;
+}
+
+/* スライダーの値を表示する小さな要素 */
+.slider-value {
+  position: absolute;
+  top: -25px;
+  font-size: 12px;
+  background-color: #007bff;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: none;
+  white-space: nowrap;
+}
+
+.slider-thumb:hover .slider-value,
+.slider-thumb:active .slider-value {
+  display: block;
+}
+
+/* スライダーの塗りつぶし部分 */
+.slider-fill {
+  position: absolute;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: linear-gradient(to right, #007bff, #00bfff);
+  border-radius: 5px;
+  pointer-events: none; /* クリックイベントを背後に通す */
+}
+
+/* ドラッグ中のスタイル */
+.slider-input:active::-webkit-slider-thumb,
+.slider-input:hover::-webkit-slider-thumb {
+  cursor: grabbing;
+  background-color: #0056b3;
+  transform: scale(1.1); /* 変更: ホバー時に少し大きく */
+}
+
+.slider-input:active::-moz-range-thumb,
+.slider-input:hover::-moz-range-thumb {
+  cursor: grabbing;
+  background-color: #0056b3;
+  transform: scale(1.1);
+}
+
+/* スライダーのトラック部分を強調 */
+.slider-input::-webkit-slider-runnable-track {
+  height: 10px;
+  background: linear-gradient(to right, #007bff, #00bfff);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.slider-input::-moz-range-track {
+  height: 10px;
+  background: linear-gradient(to right, #007bff, #00bfff);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* スライダー全体に影響するスタイル */
+body.slider-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* レスポンシブな調整 */
+@media (max-width: 600px) {
+  .slider-container {
+    padding: 5px 0;
+  }
+
+  .slider-button {
+    width: 30px;
+    height: 30px;
+    margin: 0 5px;
+  }
+
+  .slider-track {
+    margin: 0 8px;
+  }
+
+  .slider-thumb {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* キーボードアクセシビリティのためのスタイル */
+.slider-track:focus-within .slider-thumb {
+  outline: 2px solid #0056b3;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+}
+
+/* タッチデバイス用の最適化 */
+@media (pointer: coarse) {
+  .slider-thumb {
+    width: 28px;
+    height: 28px;
+  }
+
+  .slider-track {
+    height: 14px;
+  }
+}
+
+/* Safariのバグ回避用スタイル */
+@supports (-webkit-touch-callout: none) {
+  .slider-container {
+    /* Safari用の調整 */
+    touch-action: none;
+  }
 }
