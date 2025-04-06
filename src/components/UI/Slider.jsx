@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import "./Slider.css";
 
 /**
@@ -22,35 +22,41 @@ const Slider = ({
   // ドラッグ状態を管理するステート
   const [isDragging, setIsDragging] = useState(false);
 
-  // 値の計算用の関数
-  const calculateValue = (clientX) => {
-    if (!sliderTrackRef.current) return value;
+  // スライダーの値を計算する関数（useCallbackでメモ化）
+  const calculateValue = useCallback(
+    (clientX) => {
+      if (!sliderTrackRef.current) return value;
 
-    const trackRect = sliderTrackRef.current.getBoundingClientRect();
-    const trackWidth = trackRect.width;
-    const trackLeft = trackRect.left;
+      const trackRect = sliderTrackRef.current.getBoundingClientRect();
+      const trackWidth = trackRect.width;
+      const trackLeft = trackRect.left;
 
-    // クリック位置から値を計算
-    let percent = (clientX - trackLeft) / trackWidth;
-    // 0から1の範囲に収める
-    percent = Math.max(0, Math.min(1, percent));
+      // クリック位置から値を計算
+      let percent = (clientX - trackLeft) / trackWidth;
+      // 0から1の範囲に収める
+      percent = Math.max(0, Math.min(1, percent));
 
-    // 実際の値に変換
-    const range = max - min;
-    const newValue = Math.round(min + percent * range);
+      // 実際の値に変換
+      const range = max - min;
+      const newValue = Math.round(min + percent * range);
 
-    return newValue;
-  };
+      return newValue;
+    },
+    [min, max, value, sliderTrackRef]
+  );
 
-  // スライダーの値を更新する関数
-  const updateValue = (newValue) => {
-    if (onChange && newValue !== value) {
-      console.log(`Slider(${id}) 値変更: ${newValue}`);
-      // 値を更新するイベントを生成
-      const event = { target: { value: newValue } };
-      onChange(event);
-    }
-  };
+  // スライダーの値を更新する関数（useCallbackでメモ化）
+  const updateValue = useCallback(
+    (newValue) => {
+      if (onChange && newValue !== value) {
+        console.log(`Slider(${id}) 値変更: ${newValue}`);
+        // 値を更新するイベントを生成
+        const event = { target: { value: newValue } };
+        onChange(event);
+      }
+    },
+    [onChange, value, id]
+  );
 
   // トラック上でのクリックハンドラー
   const handleTrackClick = (e) => {
@@ -107,23 +113,28 @@ const Slider = ({
     }
   };
 
-  // グローバルのマウス移動ハンドラー
-  const handleMouseMove = (e) => {
-    if (isDragging) {
-      const newValue = calculateValue(e.clientX);
-      console.log(`Slider(${id}) ドラッグ中: ${e.clientX}, 新値: ${newValue}`);
-      updateValue(newValue);
-    }
-  };
+  // グローバルのマウス移動ハンドラー（useCallbackでメモ化）
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (isDragging) {
+        const newValue = calculateValue(e.clientX);
+        console.log(
+          `Slider(${id}) ドラッグ中: ${e.clientX}, 新値: ${newValue}`
+        );
+        updateValue(newValue);
+      }
+    },
+    [isDragging, calculateValue, id, updateValue]
+  );
 
-  // ドラッグ終了ハンドラー
-  const handleMouseUp = () => {
+  // ドラッグ終了ハンドラー（useCallbackでメモ化）
+  const handleMouseUp = useCallback(() => {
     if (isDragging) {
       setIsDragging(false);
       document.body.classList.remove("slider-dragging");
       console.log(`Slider(${id}) ドラッグ終了`);
     }
-  };
+  }, [isDragging, id]);
 
   // スライダーの位置を計算する関数
   const calculateThumbPosition = () => {
@@ -146,7 +157,7 @@ const Slider = ({
       document.removeEventListener("mouseleave", handleMouseUp);
       document.body.classList.remove("slider-dragging");
     };
-  }, [id, isDragging, value, min, max, handleMouseMove, handleMouseUp]);
+  }, [handleMouseMove, handleMouseUp]);
 
   // カスタムスライダーをレンダリング
   return (

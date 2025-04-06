@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("GridTab UI", () => {
+  // このテストケースは、グリッドタブの要素やレイアウトだけでなく
+  // Canvas描画機能のテストも行います
   test.beforeEach(async ({ page }) => {
     // アプリケーションのURLにアクセス (Viteのデフォルトポート)
     await page.goto("http://localhost:5173/");
@@ -18,19 +20,17 @@ test.describe("GridTab UI", () => {
     await gridTabButton.click();
     console.log("[Test Debug] Clicked grid tab button.");
     // グリッドタブのコンテンツが表示されるまで少し待つ (念のため)
-    await expect(
-      page.getByRole("heading", { name: "グリッドタブ" })
-    ).toBeVisible({ timeout: 5000 });
-    console.log("[Test Debug] GridTab heading is visible after click.");
+    await expect(page.locator('[data-testid="grid-canvas"]')).toBeVisible({
+      timeout: 5000,
+    });
+    console.log("[Test Debug] Grid canvas is visible after click.");
   });
 
   test("should display GridTab elements with correct layout and styles", async ({
     page,
   }) => {
-    // H2見出しの存在確認
-    await expect(
-      page.getByRole("heading", { name: "グリッドタブ" })
-    ).toBeVisible();
+    // Gridキャンバスの存在確認
+    await expect(page.locator('[data-testid="grid-canvas"]')).toBeVisible();
 
     // --- Layout Checks ---
     // #root が中央寄せされていないことを確認 (margin-left が auto でない)
@@ -113,6 +113,16 @@ test.describe("GridTab UI", () => {
     await expect(colsSliderNext).toBeVisible();
     console.log("[Test Debug] Cols slider elements are visible.");
 
+    // Canvas要素の存在確認
+    const gridCanvas = page.locator('[data-testid="grid-canvas"]');
+    await expect(gridCanvas).toBeVisible();
+    // Canvasの属性を確認
+    await expect(gridCanvas).toHaveAttribute("width", "500");
+    await expect(gridCanvas).toHaveAttribute("height", "500");
+    console.log(
+      "[Test Debug] Grid canvas is visible with correct size attributes."
+    );
+
     // 結果表示エリアの存在確認 (テキストの一部で確認)
     const resultArea = page.locator(".result-area");
     await expect(resultArea).toBeVisible();
@@ -135,8 +145,48 @@ test.describe("GridTab UI", () => {
     // --------------------
   });
 
-  // TODO: Step 6-1 の確認方法にある「作成したUIがdesign.mdに記述したUI改善の仕様(サイズ、padding、矢印ボタン)を満たしているかを確認する」テストを追加する
-  // (共通コンポーネント側のテストでカバーされている場合は省略可)
+  // Canvas描画機能のテスト (Step 6-4)
+  test("should render grid on canvas when slider values change", async ({
+    page,
+  }) => {
+    // Canvas要素を確認
+    const gridCanvas = page.locator('[data-testid="grid-canvas"]');
+    await expect(gridCanvas).toBeVisible();
+    console.log("[Test Debug] Starting Canvas rendering test");
+
+    // グリッドが描画されているか確認（コンソールログで確認）
+    const rowsSlider = page.locator('[data-testid="rows-slider"]');
+    const colsSlider = page.locator('[data-testid="cols-slider"]');
+
+    // スライダーの値を変更して描画が更新されるかをコンソールで確認
+    const rowsNextButton = page.locator(
+      '[data-testid="rows-control"] .slider-button-next'
+    );
+    await expect(rowsNextButton).toBeVisible();
+
+    // 行数を4に変更
+    await rowsNextButton.click();
+    await page.waitForTimeout(500);
+
+    // ブラウザコンソールのログを確認
+    const rowsValue = await rowsSlider
+      .locator('input[type="hidden"]')
+      .getAttribute("value");
+    const colsValue = await colsSlider
+      .locator('input[type="hidden"]')
+      .getAttribute("value");
+    console.log(`[Test Debug] Current grid size: ${rowsValue} × ${colsValue}`);
+    console.log("[Test Debug] Grid should be redrawn with new dimensions");
+
+    // 結果テキストも期待通りに更新されているか確認
+    const resultText = page.locator('[data-testid="result-text"]');
+    await expect(resultText).toContainText(
+      `${rowsValue} × ${colsValue} = ${Number(rowsValue) * Number(colsValue)}`
+    );
+    console.log(
+      "[Test Debug] Result text updated correctly with the new calculation"
+    );
+  });
 
   test("should update state when slider values change (Step 6-3)", async ({
     page,

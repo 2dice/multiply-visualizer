@@ -38,9 +38,7 @@ test("Check App structure and basic tab interactions", async ({ page }) => {
   await expect(areaRectangleTabButton).toBeVisible();
 
   // Verify initial content (GridTab should be active by default)
-  await expect(
-    page.getByRole("heading", { name: "グリッドタブ" })
-  ).toBeVisible();
+  await expect(page.locator('[data-testid="grid-canvas"]')).toBeVisible();
 
   // --- Slider and Button tests removed, as they are now part of specific tab components ---
 
@@ -57,9 +55,7 @@ test("Check App structure and basic tab interactions", async ({ page }) => {
 
   // Switch back to "グリッド" tab
   await gridTabButton.click();
-  await expect(
-    page.getByRole("heading", { name: "グリッドタブ" })
-  ).toBeVisible();
+  await expect(page.locator('[data-testid="grid-canvas"]')).toBeVisible();
   await expect(gridDecompositionContent).not.toBeVisible();
 
   // Final check for console errors/warnings accumulated during the test
