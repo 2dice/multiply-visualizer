@@ -369,7 +369,13 @@ const GridDecompositionTab = () => {
     <div
       className="grid-decomposition-tab-container"
       data-testid="grid-decomposition-tab-container"
-      style={{ padding: "10px 20px", maxHeight: "100vh", overflow: "hidden" }}
+      style={{
+        padding: "10px 20px",
+        maxHeight: "100vh",
+        overflow: "hidden",
+        maxWidth: "1200px", // 最大幅を設定
+        margin: "0 auto", // 中央揃え
+      }}
     >
       {/* Main container */}
       <div
@@ -388,6 +394,7 @@ const GridDecompositionTab = () => {
             flexDirection: "column",
             alignItems: "center",
             width: "100%",
+            margin: "0 auto", // 中央揃え
           }}
         >
           {/* 縦分割スライダー（グリッド表示エリアの上に配置） */}
@@ -399,7 +406,9 @@ const GridDecompositionTab = () => {
               position: "absolute",
               zIndex: "1",
               top: "75px", // グリッド表示エリアの上端からの位置調整
-              left: "calc(50% - 290px)", // グリッドの左端に配置
+              left: "50%", // コンテナの中央に配置
+              transform: "translateX(-50%)", // 自身の幅の半分だけ左に移動させて中央揃え
+              marginLeft: "-27px", // 左に27px移動
             }}
           >
             <div style={{ height: "30px" }}>
@@ -425,7 +434,9 @@ const GridDecompositionTab = () => {
               width: "100%",
               display: "flex",
               justifyContent: "center",
-              marginTop: "30px",
+              // maxWidthを削除して画面幅に応じて要素が広がるようにする
+              margin: "30px auto 0", // 上マージン30px、左右中央揃え
+              overflow: "hidden", // はみ出した要素を隠す
             }}
           >
             {/* グリッド表示エリア */}
@@ -461,7 +472,7 @@ const GridDecompositionTab = () => {
                 flexDirection: "column",
                 justifyContent: "center",
                 position: "absolute",
-                right: "calc(50% - 740px)", // グリッドの右端に配置（右にズラす）
+                left: "calc(50% + 251px - 15px)", // グリッドの右端から左に40px移動
                 top: "0", // グリッド表示エリアの上端に配置
               }}
             >
