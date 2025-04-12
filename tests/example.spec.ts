@@ -42,12 +42,16 @@ test("Check App structure and basic tab interactions", async ({ page }) => {
 
   // --- Slider and Button tests removed, as they are now part of specific tab components ---
 
-  // Switch to "グリッド分解" tab and check placeholder content
+  // Switch to "グリッド分解" tab and check content
   await gridDecompositionTabButton.click();
-  const gridDecompositionContent = page.getByText(
-    "グリッド分解タブ Content (仮)"
+  // グリッド分解タブのキャンバス要素を確認
+  const gridDecompositionCanvas = page.locator('[data-testid="grid-canvas"]');
+  await expect(gridDecompositionCanvas).toBeVisible();
+  // 分割スライダーを確認
+  const verticalSplitControl = page.locator(
+    '[data-testid="vertical-split-control"]'
   );
-  await expect(gridDecompositionContent).toBeVisible();
+  await expect(verticalSplitControl).toBeVisible();
   // Ensure GridTab content is no longer visible
   await expect(
     page.getByRole("heading", { name: "グリッドタブ" })
@@ -56,7 +60,7 @@ test("Check App structure and basic tab interactions", async ({ page }) => {
   // Switch back to "グリッド" tab
   await gridTabButton.click();
   await expect(page.locator('[data-testid="grid-canvas"]')).toBeVisible();
-  await expect(gridDecompositionContent).not.toBeVisible();
+  await expect(verticalSplitControl).not.toBeVisible();
 
   // Final check for console errors/warnings accumulated during the test
   expect(messages.filter((type) => type === "error")).toHaveLength(0);

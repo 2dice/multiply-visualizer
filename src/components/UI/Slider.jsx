@@ -14,6 +14,7 @@ const Slider = ({
   onIncrease,
   onDecrease,
   "data-testid": dataTestId,
+  hideButtons = false, // ボタンを非表示にするオプションを追加
 }) => {
   // DOM参照を保存するためのref
   const sliderTrackRef = useRef(null);
@@ -140,7 +141,8 @@ const Slider = ({
   const calculateThumbPosition = () => {
     const range = max - min;
     const percent = (value - min) / range;
-    return `${percent * 100}%`;
+    // つまみの幅の半分（14px）を考慮して左にずらす
+    return `calc(${percent * 100}% - 14px)`;
   };
 
   // グローバルイベントリスナーの追加と削除
@@ -162,18 +164,24 @@ const Slider = ({
   // カスタムスライダーをレンダリング
   return (
     <div className="slider-container" data-testid={dataTestId}>
-      <button
-        className="slider-button slider-button-prev"
-        onClick={handleDecreaseClick}
-        aria-label="値を減らす"
-      >
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M15.41 16.59L10.83 12L15.41 7.41L14 6L8 12L14 18L15.41 16.59Z"
-            fill="white"
-          />
-        </svg>
-      </button>
+      {!hideButtons && (
+        <button
+          className="slider-button slider-button-prev"
+          onClick={handleDecreaseClick}
+          aria-label="値を減らす"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M15.41 16.59L10.83 12L15.41 7.41L14 6L8 12L14 18L15.41 16.59Z"
+              fill="white"
+            />
+          </svg>
+        </button>
+      )}
 
       {/* カスタムスライダーのトラック領域 */}
       <div
@@ -181,6 +189,7 @@ const Slider = ({
         ref={sliderTrackRef}
         onClick={handleTrackClick}
         data-testid={`${dataTestId}-input`}
+        style={{ margin: hideButtons ? "0" : "0 15px" }} // ボタンが非表示の場合はマージンをなくす
       >
         {/* 現在値を示す塗りつぶし部分 */}
         <div
@@ -208,18 +217,24 @@ const Slider = ({
         />
       </div>
 
-      <button
-        className="slider-button slider-button-next"
-        onClick={handleIncreaseClick}
-        aria-label="値を増やす"
-      >
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z"
-            fill="white"
-          />
-        </svg>
-      </button>
+      {!hideButtons && (
+        <button
+          className="slider-button slider-button-next"
+          onClick={handleIncreaseClick}
+          aria-label="値を増やす"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z"
+              fill="white"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 };
