@@ -219,9 +219,9 @@ test.describe("GridTab UI", () => {
     expect(initialColsValue).toBe("4");
 
     // 初期状態での計算結果を確認
-    await expect(resultText).toContainText("3 × 4 = 12");
+    await expect(resultText).toContainText("式: 4 × 3 = 12");
     console.log(
-      "[Test Debug] Initial calculation result is correct: 3 × 4 = 12"
+      "[Test Debug] Initial calculation result is correct: 式: 4 × 3 = 12"
     );
 
     // ------ 行数スライダーの値を変更する ------
@@ -241,8 +241,8 @@ test.describe("GridTab UI", () => {
     expect(newRowsValue).toBe("4"); // 3、4に増えたか確認
 
     // 結果の式が更新されたか確認
-    await expect(resultText).toContainText("4 × 4 = 16");
-    console.log("[Test Debug] Calculation result updated to: 4 × 4 = 16");
+    await expect(resultText).toContainText("式: 4 × 4 = 16");
+    console.log("[Test Debug] Calculation result updated to: 式: 4 × 4 = 16");
 
     // ------ 列数スライダーの値を変更する ------
     console.log("[Test Debug] Changing cols value using track click.");
@@ -270,8 +270,8 @@ test.describe("GridTab UI", () => {
     const newColsValue = await colsHiddenInput.getAttribute("value");
     console.log(`[Test Debug] Updated cols value: ${newColsValue}`);
 
-    // 結果の式が更新されたか確認 - クリック位置によって値が変わるので、単に 4 × から始まる式であることを確認
-    await expect(resultText).toContainText("4 ×");
+    // 結果の式が更新されたか確認 - クリック位置によって値が変わるので、単に 式: から始まる式であることを確認
+    await expect(resultText).toContainText("式:");
     console.log(
       `[Test Debug] Calculation result updated correctly with new cols value: ${newColsValue}`
     );
@@ -297,7 +297,7 @@ test.describe("GridTab UI", () => {
     const colsValue = decreasedColsValue || "6"; // nullの場合はデフォルト値を使用
     const expectedProduct = 4 * parseInt(colsValue);
 
-    await expect(resultText).toContainText(`4 ×`);
+    await expect(resultText).toContainText(`式:`);
     console.log(
       `[Test Debug] Calculation result updated correctly after decrement`
     );

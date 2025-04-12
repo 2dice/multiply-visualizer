@@ -7,7 +7,6 @@ import GridTab from "./components/GridTab"; // GridTabコンポーネントを�
 
 // 他のタブコンポーネントも将来的にインポートする
 // import GridDecompositionTab from "./components/GridDecompositionTab";
-// import AreaRectangleTab from "./components/AreaRectangleTab";
 // import AreaTriangleTab from "./components/AreaTriangleTab";
 // import TimeAndSpeedTab from "./components/TimeAndSpeedTab";
 
@@ -24,19 +23,14 @@ function App() {
     }, // Step 7 で実装
     {
       id: 2,
-      label: "面積(長方形)",
-      component: <p>面積(長方形)タブ Content (仮)</p>,
-    }, // Step 8 で実装
-    {
-      id: 3,
       label: "面積(三角形)",
       component: <p>面積(三角形)タブ Content (仮)</p>,
-    }, // Step 9 で実装
+    }, // Step 8 で実装 (旧Step 9)
     {
-      id: 4,
+      id: 3,
       label: "時間と速度",
       component: <p>時間と速度タブ Content (仮)</p>,
-    }, // Step 10 で実装
+    }, // Step 9 で実装 (旧Step 10)
   ];
 
   return (

@@ -27,15 +27,15 @@ test("Check App structure and basic tab interactions", async ({ page }) => {
     name: "グリッド分解",
     exact: true,
   });
-  const areaRectangleTabButton = page.getByRole("button", {
-    name: "面積(長方形)",
+  const areaTriangleTabButton = page.getByRole("button", {
+    name: "面積(三角形)",
     exact: true,
   });
   // Add checks for other tabs if needed
 
   await expect(gridTabButton).toBeVisible();
   await expect(gridDecompositionTabButton).toBeVisible();
-  await expect(areaRectangleTabButton).toBeVisible();
+  await expect(areaTriangleTabButton).toBeVisible();
 
   // Verify initial content (GridTab should be active by default)
   await expect(page.locator('[data-testid="grid-canvas"]')).toBeVisible();
