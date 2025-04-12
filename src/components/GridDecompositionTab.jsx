@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Slider from "./UI/Slider";
+import VerticalSlider from "./UI/VerticalSlider";
 // import styles from './GridDecompositionTab.module.css'; // CSSモジュールは後で作成
 
 const GridDecompositionTab = () => {
@@ -327,14 +328,32 @@ const GridDecompositionTab = () => {
     // eventがNumberの場合もあるので、両方対応する
     const newValue =
       typeof event === "object" ? Number(event.target.value) : Number(event);
-    setHorizontalSplit(newValue);
     console.log(
-      `GridDecompositionTab: Horizontal split changed to ${newValue}`
+      `[デバッグ] 横分割スライダー値変更ハンドラー呼び出し: event=`,
+      event,
+      ` newValue=${newValue}`
     );
+
+    // 値が有効範囲内か確認
+    if (newValue >= 0 && newValue <= maxValue) {
+      setHorizontalSplit(newValue);
+      console.log(
+        `GridDecompositionTab: Horizontal split changed to ${newValue}`
+      );
+    } else {
+      console.log(
+        `[デバッグ] 横分割スライダー: 無効な値 ${newValue} が指定されました`
+      );
+    }
   };
+
+  // 横分割スライダー用のカスタムクリックハンドラーは不要になったので削除
 
   // 横分割増減のハンドラー
   const handleHorizontalSplitIncrease = () => {
+    console.log(
+      `[デバッグ] 横分割増加ハンドラー呼び出し: 現在値=${horizontalSplit}`
+    );
     if (horizontalSplit < maxValue) {
       const newValue = horizontalSplit + 1;
       setHorizontalSplit(newValue);
@@ -345,6 +364,9 @@ const GridDecompositionTab = () => {
   };
 
   const handleHorizontalSplitDecrease = () => {
+    console.log(
+      `[デバッグ] 横分割減少ハンドラー呼び出し: 現在値=${horizontalSplit}`
+    );
     if (horizontalSplit > 1) {
       const newValue = horizontalSplit - 1;
       setHorizontalSplit(newValue);
@@ -467,36 +489,28 @@ const GridDecompositionTab = () => {
               className="horizontal-split-control"
               data-testid="horizontal-split-control"
               style={{
-                height: "422px", // グリッドの高さに合わせる（境界線も含む）
+                height: "539px", // グリッドの高さに合わせる（境界線も含む）
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
                 position: "absolute",
-                left: "calc(50% + 251px - 15px)", // グリッドの右端から左に40px移動
+                left: "calc(50% + 251px + 10px)", // グリッドの右端から右に20px移動
                 top: "0", // グリッド表示エリアの上端に配置
               }}
+              // カスタムクリックハンドラーは不要になったので削除
             >
-              <div
-                style={{
-                  transform: "rotate(-90deg)",
-                  width: "502px",
-                  transformOrigin: "0 0",
-                  position: "relative",
-                  top: "340px", // 高さ方向の位置調整
-                }}
-              >
-                <Slider
-                  id="horizontal-split-slider"
-                  min={0}
-                  max={maxValue}
-                  value={horizontalSplit}
-                  onChange={handleHorizontalSplitChange}
-                  onIncrease={handleHorizontalSplitDecrease}
-                  onDecrease={handleHorizontalSplitIncrease}
-                  data-testid="horizontal-split-slider"
-                  hideButtons={true}
-                />
-              </div>
+              {/* 縦方向スライダーを使用しているため、上に行くほど値が大きくなる */}
+              <VerticalSlider
+                id="horizontal-split-slider"
+                min={0}
+                max={maxValue}
+                value={horizontalSplit}
+                onChange={handleHorizontalSplitChange}
+                onIncrease={handleHorizontalSplitIncrease}
+                onDecrease={handleHorizontalSplitDecrease}
+                data-testid="horizontal-split-slider"
+                hideButtons={true}
+              />
             </div>
           </div>
         </div>

@@ -208,3 +208,34 @@ body.slider-dragging {
     touch-action: none;
   }
 }
+
+/* 縦方向スライダー用のスタイル */
+.vertical-slider {
+  height: 523px; /* グリッドの高さに合わせる */
+  flex-direction: column;
+}
+
+.vertical-slider-track {
+  height: 422px; /* グリッドの高さに合わせる */
+  width: 10px !important; /* 元のスライダーと同じ幅にする */
+  min-width: 2px !important; /* 最小幅も設定して.slider-trackのmin-widthを上書き */
+  margin: 0;
+  background-color: #e0e0e0; /* 元のスライダーと同じ背景色 */
+}
+
+.vertical-slider-fill {
+  width: 100%;
+  height: 0;
+  bottom: 0;
+  top: auto;
+  background-color: #3498db; /* 元のスライダーと同じ塗りつぶし色 */
+}
+
+.vertical-slider-thumb {
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 22px !important; /* 元のスライダーと同じサイズ */
+  height: 22px !important; /* 元のスライダーと同じサイズ */
+  border: 3px solid white !important;
+}
