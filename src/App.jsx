@@ -5,9 +5,9 @@ import Tab from "./components/UI/Tab";
 // import Button from "./components/UI/Button"; // GridTab内で使用するため、ここでは不要
 import GridTab from "./components/GridTab"; // GridTabコンポーネントをインポート
 import GridDecompositionTab from "./components/GridDecompositionTab"; // GridDecompositionTabコンポーネントをインポート
+import TriangleAreaTab from "./components/TriangleAreaTab"; // TriangleAreaTabコンポーネントをインポート
 
 // 他のタブコンポーネントも将来的にインポートする
-// import AreaTriangleTab from "./components/AreaTriangleTab";
 // import TimeAndSpeedTab from "./components/TimeAndSpeedTab";
 
 function App() {
@@ -24,8 +24,8 @@ function App() {
     {
       id: 2,
       label: "面積(三角形)",
-      component: <p>面積(三角形)タブ Content (仮)</p>,
-    }, // Step 8 で実装
+      component: <TriangleAreaTab />,
+    }, // Step 8-1 で実装
     {
       id: 3,
       label: "時間と速度",
