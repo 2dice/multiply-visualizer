@@ -14,23 +14,6 @@ const TriangleAreaTab = () => {
   // コンテキスト参照用
   const ctxRef = useRef(null);
 
-  // コンポーネントがマウントされたときにコンテキストを初期化
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      ctxRef.current = canvas.getContext("2d");
-      // 初回描画
-      drawTriangle();
-    }
-  }, []);
-
-  // 底辺または高さが変更されたときに面積を再計算
-  useEffect(() => {
-    setArea((base * height) / 2);
-    // 描画を更新
-    drawTriangle();
-  }, [base, height, vertexPosition]);
-
   // 三角形描画関数
   const drawTriangle = useCallback(() => {
     const canvas = canvasRef.current;
@@ -134,6 +117,21 @@ const TriangleAreaTab = () => {
     // 点線スタイルをリセット
     ctx.setLineDash([]);
   }, [base, height, vertexPosition]);
+
+  // コンポーネントがマウントされたときにコンテキストを初期化
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      ctxRef.current = canvas.getContext("2d");
+      // 初回描画
+      drawTriangle();
+    }
+  }, [drawTriangle]); // drawTriangleを依存配列に追加
+
+  // 底辺または高さが変更されたときに面積を再計算
+  useEffect(() => {
+    setArea((base * height) / 2);
+  }, [base, height]);
 
   // 底辺スライダーの値変更ハンドラー
   const handleBaseChange = (event) => {
