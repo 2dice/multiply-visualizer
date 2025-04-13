@@ -8,21 +8,20 @@ test.describe("GridDecompositionTab UI", () => {
     // ページ読み込み確認 (タブコンテナが表示されるまで待つ)
     const tabsContainer = page.locator(".tabs-container");
     await expect(tabsContainer).toBeVisible({ timeout: 10000 }); // 10秒待機
-    console.log("[Test Debug] Tabs container is visible.");
+
     // "グリッド分解" タブをクリック (getByRoleとexact: trueで特定)
     const gridDecompositionTabButton = page.getByRole("button", {
       name: "グリッド分解",
       exact: true,
     });
     await expect(gridDecompositionTabButton).toBeVisible();
-    console.log("[Test Debug] Grid decomposition tab button is visible.");
+
     await gridDecompositionTabButton.click();
-    console.log("[Test Debug] Clicked grid decomposition tab button.");
+
     // グリッド分解タブのコンテンツが表示されるまで少し待つ (念のため)
     await expect(page.locator('[data-testid="grid-canvas"]')).toBeVisible({
       timeout: 5000,
     });
-    console.log("[Test Debug] Grid canvas is visible after click.");
   });
 
   test("should display GridDecompositionTab elements with correct layout and styles", async ({
@@ -35,9 +34,6 @@ test.describe("GridDecompositionTab UI", () => {
     const gridDisplayArea = page.locator(".grid-display-area");
     await expect(gridDisplayArea).toBeVisible();
     await expect(gridDisplayArea).toHaveCSS("width", /[1-9][0-9]*px/); // 幅が0でないことを確認
-    console.log(
-      "[Test Debug] Grid display area is visible with correct styles."
-    );
 
     // 4つのスライダーの存在確認
     // 行数スライダー
@@ -45,7 +41,6 @@ test.describe("GridDecompositionTab UI", () => {
     await expect(rowsControl).toBeVisible();
     const rowsSlider = page.locator('[data-testid="rows-slider"]');
     await expect(rowsSlider).toBeVisible();
-    console.log("[Test Debug] Rows slider is visible.");
 
     // 列数スライダー
     const colsControl = page.locator('[data-testid="cols-control"]');
@@ -168,5 +163,87 @@ test.describe("GridDecompositionTab UI", () => {
     console.log(
       "[Test Debug] Split formula text updated after changing vertical split"
     );
+  });
+
+  test("should calculate split formula correctly", async ({ page }) => {
+    // グリッド分解タブに移動
+    await page.goto("http://localhost:5173/");
+    const gridDecompositionTabButton = page.getByRole("button", {
+      name: "グリッド分解",
+      exact: true,
+    });
+    await expect(gridDecompositionTabButton).toBeVisible();
+    await gridDecompositionTabButton.click();
+    await expect(page.locator('[data-testid="grid-canvas"]')).toBeVisible();
+
+    // グローバル変数を使ってスライダーの値を直接設定する関数
+    async function setSliderValueDirectly(
+      rows: number,
+      cols: number,
+      vSplit: number,
+      hSplit: number
+    ) {
+      await page.evaluate(
+        ({ rows, cols, vSplit, hSplit }) => {
+          // グローバル変数からコンポーネントの状態管理関数を取得
+          const gridComponent = window.__GRID_DECOMPOSITION_COMPONENT__;
+          if (gridComponent) {
+            // 値を直接設定
+            gridComponent.setRows(rows);
+            gridComponent.setCols(cols);
+            gridComponent.setVerticalSplit(vSplit);
+            gridComponent.setHorizontalSplit(hSplit);
+          }
+        },
+        { rows, cols, vSplit, hSplit }
+      );
+
+      // 変更が反映されるのを待つ
+      await page.waitForTimeout(500);
+    }
+
+    // テストケース１：横の数10、縦の数8、縦分奲4、横分奲6
+
+    // 値を直接設定
+    await setSliderValueDirectly(8, 10, 4, 6);
+
+    // 式の確認
+    const splitFormulaText = page.locator('[data-testid="split-formula-text"]');
+    await expect(splitFormulaText).toBeVisible();
+    await splitFormulaText.textContent();
+
+    // 期待される式と比較
+    // 正しい式は (4×6) + (4×2) + (6×6) + (6×2) = 80
+    await expect(splitFormulaText).toContainText(
+      "(4×6) + (4×2) + (6×6) + (6×2) = 80"
+    );
+
+    // テストケース２：横の数10、縦の数8、縦分奲8、横分奲7
+
+    // 値を直接設定
+    await setSliderValueDirectly(8, 10, 8, 7);
+
+    // 式の確認
+    await expect(splitFormulaText).toBeVisible();
+    await splitFormulaText.textContent();
+
+    // 期待される式と比較
+    // 正しい式は (8×7) + (8×1) + (2×7) + (2×1) = 80
+    await expect(splitFormulaText).toContainText(
+      "(8×7) + (8×1) + (2×7) + (2×1) = 80"
+    );
+
+    // テストケース３：横の数10、縦の数8、縦分奲9、横分奲8
+
+    // 値を直接設定
+    await setSliderValueDirectly(8, 10, 9, 8);
+
+    // 式の確認
+    await expect(splitFormulaText).toBeVisible();
+    await splitFormulaText.textContent();
+
+    // 期待される式と比較
+    // 正しい式は (9×8) + (1×8) = 80
+    await expect(splitFormulaText).toContainText("(9×8) + (1×8) = 80");
   });
 });

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Slider from "./UI/Slider";
 import VerticalSlider from "./UI/VerticalSlider";
-// import styles from './GridDecompositionTab.module.css'; // CSSモジュールは後で作成
 
 const GridDecompositionTab = () => {
   // 状態管理の実装
@@ -28,10 +27,6 @@ const GridDecompositionTab = () => {
     let width = canvas.width;
     let height = canvas.height;
 
-    console.log(
-      `【デバッグ】描画前のキャンバスサイズ: ${width}x${height}、セル数: ${rows}x${cols}、分割位置: 縦${verticalSplit}, 横${horizontalSplit}`
-    );
-
     // キャンバスをクリア
     ctx.clearRect(0, 0, width, height);
 
@@ -42,16 +37,15 @@ const GridDecompositionTab = () => {
     // 10x10のときにキャンバス全体にグリッドが収まるようなセルサイズを計算
     const visibleCellSize = 500 / 10; // 10セルあたりの幅を固定
     const maxVisibleCells = 10; // 最大表示セル数
-    console.log(`【デバッグ】セルサイズ計算: ${visibleCellSize}px`);
 
     // 左下を原点として配置するための開始位置
     const startX = 0; // 左端を固定
     const startY = height - maxVisibleCells * visibleCellSize; // 下端から上に向かって配置、常に10セル分の高さを確保
 
-    // 背景色を追加 - もっと濃いポップな色に変更
+    // 背景色を追加 - 色弱者にも見やすい色に変更
     const bgGradient = ctx.createLinearGradient(0, 0, width, height);
-    bgGradient.addColorStop(0, "#FFE8C2"); // 濃いクリーム色
-    bgGradient.addColorStop(1, "#FFCFA9"); // 濃いピーチ色
+    bgGradient.addColorStop(0, "#E6E6FA"); // 薄いラベンダー色
+    bgGradient.addColorStop(1, "#D8D8F0"); // より深いラベンダー色
     ctx.fillStyle = bgGradient;
     ctx.fillRect(0, 0, 500, 500); // 背景も常に500x500の正方形に固定
 
@@ -95,10 +89,10 @@ const GridDecompositionTab = () => {
       ctx.stroke();
     }
 
-    // 分割位置を示すオレンジ色のラインを描画
-    ctx.strokeStyle = "rgba(255, 120, 50, 0.8)"; // オレンジ色を濃く
-    ctx.lineWidth = 3;
-    ctx.setLineDash([5, 3]); // 点線スタイル
+    // 分割位置を示すラインをより強調して描画
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.9)"; // 黒色でより目立つように
+    ctx.lineWidth = 5; // 線を太く
+    ctx.setLineDash([8, 4]); // 点線スタイルをより目立つように調整
 
     // 縦分割位置のライン
     const xSplit = startX + verticalSplit * visibleCellSize; // 縦分割位置に線を引く
@@ -135,10 +129,44 @@ const GridDecompositionTab = () => {
         // セルのサイズは隙間分小さく
         const actualCellSize = visibleCellSize - cellPadding * 2;
 
-        // グラデーションで光沉感を出す - より鮮やかでポップな色使い
+        // 分割領域に基づいて色を変える
+        // 分割領域を判定（左上、右上、左下、右下）
+        let gradientColors;
+
+        // 分割領域を判定
+        const isLeftSide = col < verticalSplit;
+        const isTopSide = row < horizontalSplit;
+
+        if (isLeftSide && isTopSide) {
+          // 左上領域（濃い青色）- 色弱者にも識別しやすい
+          gradientColors = {
+            start: `rgba(0, 102, 204, ${0.8 * cellOpacity})`,
+            end: `rgba(0, 51, 153, ${0.6 * cellOpacity})`,
+          };
+        } else if (!isLeftSide && isTopSide) {
+          // 右上領域（濃い茶色）- 黄色を避けて茶色に変更
+          gradientColors = {
+            start: `rgba(153, 102, 51, ${0.8 * cellOpacity})`,
+            end: `rgba(102, 51, 0, ${0.6 * cellOpacity})`,
+          };
+        } else if (isLeftSide && !isTopSide) {
+          // 左下領域（濃い紫色）- 色弱者にも識別しやすい
+          gradientColors = {
+            start: `rgba(153, 51, 204, ${0.8 * cellOpacity})`,
+            end: `rgba(102, 0, 153, ${0.6 * cellOpacity})`,
+          };
+        } else {
+          // 右下領域（濃い赤色）- 色弱者にも識別しやすい
+          gradientColors = {
+            start: `rgba(204, 0, 0, ${0.8 * cellOpacity})`,
+            end: `rgba(153, 0, 0, ${0.6 * cellOpacity})`,
+          };
+        }
+
+        // グラデーションで光沉感を出す
         const gradient = ctx.createLinearGradient(x, y, x, y + actualCellSize);
-        gradient.addColorStop(0, `rgba(111, 183, 214, ${0.8 * cellOpacity})`); // 明るい空色
-        gradient.addColorStop(1, `rgba(63, 114, 175, ${0.6 * cellOpacity})`); // 深めの空色
+        gradient.addColorStop(0, gradientColors.start);
+        gradient.addColorStop(1, gradientColors.end);
 
         ctx.fillStyle = gradient;
 
@@ -227,9 +255,18 @@ const GridDecompositionTab = () => {
 
     ctxRef.current = context; // コンテキストを参照として保存
 
+    // テスト用にグローバル変数にコンポーネントの状態管理関数を設定
+    window.__GRID_DECOMPOSITION_COMPONENT__ = {
+      setRows,
+      setCols,
+      setVerticalSplit,
+      setHorizontalSplit,
+      getState: () => ({ rows, cols, verticalSplit, horizontalSplit }),
+    };
+
     // 初回描画
     drawGrid();
-  }, [drawGrid]);
+  }, [drawGrid, rows, cols, verticalSplit, horizontalSplit]);
 
   // 行数または列数が変更されたときに自動的に積を更新とグリッドを描画
   useEffect(() => {
@@ -357,34 +394,63 @@ const GridDecompositionTab = () => {
     if (horizontalSplit < maxValue) {
       const newValue = horizontalSplit + 1;
       setHorizontalSplit(newValue);
-      console.log(
-        `GridDecompositionTab: Horizontal split increased to ${newValue}`
-      );
     }
   };
 
   const handleHorizontalSplitDecrease = () => {
-    console.log(
-      `[デバッグ] 横分割減少ハンドラー呼び出し: 現在値=${horizontalSplit}`
-    );
     if (horizontalSplit > 1) {
       const newValue = horizontalSplit - 1;
       setHorizontalSplit(newValue);
-      console.log(
-        `GridDecompositionTab: Horizontal split decreased to ${newValue}`
-      );
     }
   };
 
   // 分割結果の式を生成する関数
   const generateSplitFormula = () => {
-    // 分割された4つの領域の計算式を生成
-    const topLeft = `(${verticalSplit}×${horizontalSplit})`;
-    const topRight = `(${verticalSplit}×${cols - horizontalSplit})`;
-    const bottomLeft = `(${rows - verticalSplit}×${horizontalSplit})`;
-    const bottomRight = `(${rows - verticalSplit}×${cols - horizontalSplit})`;
+    // 実際のグリッドサイズに基づいた分割位置を計算
+    // 縦分割は横の数と比較、横分割は縦の数と比較
+    const effectiveVerticalSplit = Math.min(verticalSplit, cols);
+    const effectiveHorizontalSplit = Math.min(horizontalSplit, rows);
 
-    return `${topLeft} + ${topRight} + ${bottomLeft} + ${bottomRight} = ${product}`;
+    // 全ての場合で同じ計算式を使用する
+    // 式の基本形：(縦分割の数×横分割の数) + (縦分割の数×(縦の数-横分割の数)) + ((横の数-縦分割の数)×横分割の数) + ((横の数-縦分割の数)×(縦の数-横分割の数))
+    // 分割線がグリッドの外にある場合も同じ計算式を使い、有効な領域のみを式に含める
+    const terms = [];
+
+    // 左上領域: 縦分割の数×横分割の数
+    if (effectiveVerticalSplit > 0 && effectiveHorizontalSplit > 0) {
+      terms.push(`(${effectiveVerticalSplit}×${effectiveHorizontalSplit})`);
+    }
+
+    // 右上領域: 縦分割の数×(縦の数-横分割の数)
+    if (effectiveVerticalSplit > 0 && rows - effectiveHorizontalSplit > 0) {
+      // 正しい計算式は、縦分割の数×(縦の数-横分割の数)
+      const rightHeight = rows - effectiveHorizontalSplit;
+      terms.push(`(${effectiveVerticalSplit}×${rightHeight})`);
+    }
+
+    // 左下領域: (横の数-縦分割の数)×横分割の数
+    if (cols - effectiveVerticalSplit > 0 && effectiveHorizontalSplit > 0) {
+      terms.push(
+        `(${cols - effectiveVerticalSplit}×${effectiveHorizontalSplit})`
+      );
+    }
+
+    // 右下領域: (横の数-縦分割の数)×(縦の数-横分割の数)
+    if (
+      cols - effectiveVerticalSplit > 0 &&
+      rows - effectiveHorizontalSplit > 0
+    ) {
+      terms.push(
+        `(${cols - effectiveVerticalSplit}×${rows - effectiveHorizontalSplit})`
+      );
+    }
+
+    // 式が空の場合はエラーメッセージを表示
+    if (terms.length === 0) {
+      return "有効な分割がありません";
+    }
+
+    return `${terms.join(" + ")} = ${product}`;
   };
 
   return (
