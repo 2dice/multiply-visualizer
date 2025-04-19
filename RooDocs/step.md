@@ -114,9 +114,12 @@
 - **確認方法**:
   - スライダーの値が変化した際に、Playwrightのテスト内でその値を取得し、ターミナルログに出力して確認する。
 
-### Step 8-3: Canvasによる描画処理
+### Step 8-3: Canvasによる描画処理 (done)
 
 - **概要**: スライダーの値に応じて三角形を描画
+- **実装する際の注意点**:
+  - ESLintの警告を確認: `React Hook useCallback has unnecessary dependencies: 'base', 'height', and 'vertexPosition'`
+  - drawTriangle関数の依存配列を適切に実装、またはリファクタリングする
 - **確認方法**:
   - Playwrightでスライダーの値を変化させ、三角形の表示が変化することをターミナルログに出力して確認する。
   - スライダーの値に応じて三角形が変化することを目視で確認

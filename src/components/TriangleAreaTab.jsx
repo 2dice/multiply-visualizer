@@ -7,12 +7,15 @@ const TriangleAreaTab = () => {
   const [height, setHeight] = useState(4); // 初期の高さ（design.mdより）
   const [vertexPosition, setVertexPosition] = useState("center"); // 初期の頂点位置（左端、中央、右端）
   const [area, setArea] = useState((base * height) / 2); // 三角形の面積
+  const [isBlinking, setIsBlinking] = useState(true); // 点滅状態の管理
   const maxValue = 10; // 最大値は10
 
   // canvasの参照を作成
   const canvasRef = useRef(null);
   // コンテキスト参照用
   const ctxRef = useRef(null);
+  // 点滅タイマーの参照用
+  const timerRef = useRef(null);
 
   // 三角形描画関数
   const drawTriangle = useCallback(() => {
@@ -22,19 +25,19 @@ const TriangleAreaTab = () => {
     if (!canvas || !ctx) return;
 
     // 現在のキャンバスサイズを取得
-    let width = canvas.width;
-    let height = canvas.height;
+    let canvasWidth = canvas.width;
+    let canvasHeight = canvas.height;
 
     console.log(
-      `【デバッグ】三角形描画前のキャンバスサイズ: ${width}x${height}`
+      `【デバッグ】三角形描画前のキャンバスサイズ: ${canvasWidth}x${canvasHeight}`
     );
 
     // キャンバスをクリア
-    ctx.clearRect(0, 0, width, height);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
     // キャンバスの高さを調整して縦に10セル入るようにする
     canvas.height = 500; // キャンバスの高さも500に固定
-    height = canvas.height;
+    canvasHeight = canvas.height;
 
     // 10x10のときにキャンバス全体にグリッドが収まるようなセルサイズを計算
     const visibleCellSize = 500 / 10; // 10セルあたりの幅を固定
@@ -43,10 +46,20 @@ const TriangleAreaTab = () => {
 
     // 左下を原点として配置するための開始位置
     const startX = 0; // 左端を固定
-    const startY = height - maxVisibleCells * visibleCellSize; // 下端から上に向かって配置、常に10セル分の高さを確保
+    const startY = 0; // キャンバスの上端から開始
+
+    console.log(`【デバッグ】グリッド起点座標: (${startX}, ${startY})`);
+    console.log(
+      `【デバッグ】スライダー値確認: 底辺=${base}, 高さ=${height}, 頂点位置=${vertexPosition}`
+    );
 
     // 背景色を追加 - もっと濃いポップな色に変更
-    const bgGradient = ctx.createLinearGradient(0, 0, width, height);
+    const bgGradient = ctx.createLinearGradient(
+      0,
+      0,
+      canvasWidth,
+      canvasHeight
+    );
     bgGradient.addColorStop(0, "#FFE8C2"); // 濃いクリーム色
     bgGradient.addColorStop(1, "#FFCFA9"); // 濃いピーチ色
     ctx.fillStyle = bgGradient;
@@ -55,11 +68,11 @@ const TriangleAreaTab = () => {
     // 固定の水玉模様を追加（アニメーションなし）
     ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
     const bubbles = [
-      { x: width * 0.2, y: height * 0.3, radius: 25 },
-      { x: width * 0.8, y: height * 0.2, radius: 35 },
-      { x: width * 0.5, y: height * 0.7, radius: 30 },
-      { x: width * 0.3, y: height * 0.8, radius: 20 },
-      { x: width * 0.7, y: height * 0.5, radius: 40 },
+      { x: canvasWidth * 0.2, y: canvasHeight * 0.3, radius: 25 },
+      { x: canvasWidth * 0.8, y: canvasHeight * 0.2, radius: 35 },
+      { x: canvasWidth * 0.5, y: canvasHeight * 0.7, radius: 30 },
+      { x: canvasWidth * 0.3, y: canvasHeight * 0.8, radius: 20 },
+      { x: canvasWidth * 0.7, y: canvasHeight * 0.5, radius: 40 },
     ];
 
     for (const bubble of bubbles) {
@@ -68,11 +81,7 @@ const TriangleAreaTab = () => {
       ctx.fill();
     }
 
-    // TODO: 実際の三角形描画処理（Step 8-3で実装）
-    // この部分は現時点ではプレースホルダーとしてグリッド線のみ描画
-
     // グリッドラインを入れる - 常に最大数分表示
-
     // 通常のグリッド線の描画 - 常に10個分表示
     ctx.strokeStyle = "rgba(150, 150, 150, 0.5)"; // グリッド線の色を濃いグレーに
     ctx.lineWidth = 1;
@@ -116,7 +125,155 @@ const TriangleAreaTab = () => {
 
     // 点線スタイルをリセット
     ctx.setLineDash([]);
-  }, [base, height, vertexPosition]);
+
+    // 三角形を描画
+    // 三角形の座標計算
+    // スライダーの値に対応するグリッドのサイズを計算
+    const baseWidth = base * visibleCellSize;
+    const triangleHeight = height * visibleCellSize;
+
+    console.log(`【デバッグ】スライダー値: 底辺=${base}, 高さ=${height}`);
+    console.log(
+      `【デバッグ】底辺サイズ=${baseWidth}px, 高さサイズ=${triangleHeight}px`
+    );
+
+    // 三角形の左下をグリッドエリアの左下に固定する計算
+    // グリッドエリアの左下の座標を定義
+    const gridBottomLeftX = 0;
+    const gridBottomLeftY = canvasHeight;
+
+    // グリッド上のセルの大きさが50pxなので、マージンを設定して少し調整
+    const marginX = 0; // 左端に固定
+    const marginY = 0; // 下端に固定
+
+    // 底辺の左端のx座標
+    const bottomLeftX = gridBottomLeftX + marginX;
+    // 底辺のy座標（下端）
+    const bottomLeftY = gridBottomLeftY - marginY;
+
+    // 底辺の右端の座標
+    const bottomRightX = bottomLeftX + baseWidth;
+    const bottomRightY = bottomLeftY;
+
+    // 頂点のx座標（頂点位置によって変わる）
+    let topX;
+
+    switch (vertexPosition) {
+      case "left":
+        topX = bottomLeftX; // 左端
+        break;
+      case "center":
+        topX = bottomLeftX + baseWidth / 2; // 中央
+        break;
+      case "right":
+        topX = bottomRightX; // 右端
+        break;
+      default:
+        topX = bottomLeftX + baseWidth / 2; // デフォルトは中央
+    }
+
+    // 頂点のy座標（上端）
+    const topY = bottomLeftY - triangleHeight;
+
+    console.log(
+      `【デバッグ】三角形座標: 底辺左(${bottomLeftX},${bottomLeftY}), 底辺右(${bottomRightX},${bottomRightY}), 頂点(${topX},${topY})`
+    );
+
+    // 先ほど上部ですでに座標設定済み
+
+    // 三角形を描画
+    ctx.beginPath();
+    ctx.moveTo(topX, topY);
+    ctx.lineTo(bottomLeftX, bottomLeftY);
+    ctx.lineTo(bottomRightX, bottomRightY);
+    ctx.closePath();
+
+    // 三角形の塗りつぶし
+    const triangleGradient = ctx.createLinearGradient(
+      bottomLeftX,
+      bottomLeftY,
+      bottomRightX,
+      topY
+    );
+    triangleGradient.addColorStop(0, "rgba(100, 180, 255, 0.7)");
+    triangleGradient.addColorStop(1, "rgba(0, 120, 215, 0.7)");
+    ctx.fillStyle = triangleGradient;
+    ctx.fill();
+
+    // 三角形の枠線
+    ctx.strokeStyle = "rgba(0, 80, 180, 0.9)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 長方形の空白部分（点滅エフェクト用）を描画
+    // 状態変数isBlinkingを使用
+    console.log(
+      `【デバッグ】点滅エフェクト: 現在の状態 isBlinking=${isBlinking}`
+    );
+
+    if (isBlinking) {
+      // 頂点位置に応じて異なる空白部分を描画
+      if (vertexPosition === "center") {
+        // 中央の場合は左右の空白部分を描画
+        const leftTriangle = {
+          points: [
+            { x: bottomLeftX, y: bottomLeftY },
+            { x: topX, y: topY },
+            { x: bottomLeftX, y: topY },
+          ],
+        };
+
+        const rightTriangle = {
+          points: [
+            { x: topX, y: topY },
+            { x: bottomRightX, y: bottomRightY },
+            { x: bottomRightX, y: topY },
+          ],
+        };
+
+        // 左の空白三角形
+        ctx.beginPath();
+        ctx.moveTo(leftTriangle.points[0].x, leftTriangle.points[0].y);
+        ctx.lineTo(leftTriangle.points[1].x, leftTriangle.points[1].y);
+        ctx.lineTo(leftTriangle.points[2].x, leftTriangle.points[2].y);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(255, 100, 100, 0.5)";
+        ctx.fill();
+
+        // 右の空白三角形
+        ctx.beginPath();
+        ctx.moveTo(rightTriangle.points[0].x, rightTriangle.points[0].y);
+        ctx.lineTo(rightTriangle.points[1].x, rightTriangle.points[1].y);
+        ctx.lineTo(rightTriangle.points[2].x, rightTriangle.points[2].y);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(255, 100, 100, 0.5)";
+        ctx.fill();
+      } else if (vertexPosition === "left") {
+        // 左端の場合は右側の空白部分を描画
+        ctx.beginPath();
+        ctx.moveTo(topX, topY);
+        ctx.lineTo(bottomRightX, bottomRightY);
+        ctx.lineTo(bottomRightX, topY);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(255, 100, 100, 0.5)";
+        ctx.fill();
+      } else if (vertexPosition === "right") {
+        // 右端の場合は左側の空白部分を描画
+        ctx.beginPath();
+        ctx.moveTo(topX, topY);
+        ctx.lineTo(bottomLeftX, bottomLeftY);
+        ctx.lineTo(bottomLeftX, topY);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(255, 100, 100, 0.5)";
+        ctx.fill();
+      }
+    }
+
+    // コンソールにデバッグ情報を出力
+    console.log(
+      `【デバッグ】三角形描画: 底辺=${base}, 高さ=${height}, 頂点位置=${vertexPosition}`
+    );
+  }, [base, height, vertexPosition, isBlinking]); // base, height, vertexPosition, isBlinkingは全て描画に必要
 
   // コンポーネントがマウントされたときにコンテキストを初期化
   useEffect(() => {
@@ -127,6 +284,34 @@ const TriangleAreaTab = () => {
       drawTriangle();
     }
   }, [drawTriangle]); // drawTriangleを依存配列に追加
+
+  // isBlinkingが変わったときに再描画を実行
+  useEffect(() => {
+    // 点滅状態が変わったときに再描画
+    console.log(
+      `【点滅再描画】isBlinkingが変化したため再描画実行: ${isBlinking}`
+    );
+    drawTriangle();
+  }, [isBlinking, drawTriangle]); // isBlinkingがstateなので依存配列に追加
+
+  // 点滅タイマーを設定
+  useEffect(() => {
+    // タイマーを設定（500ミリ秒間隔で点滅）
+    timerRef.current = setInterval(() => {
+      setIsBlinking((prev) => {
+        console.log(`【点滅タイマー】状態変更: isBlinking=${!prev}`);
+        return !prev; // 前の状態を反転
+      });
+    }, 500);
+
+    // クリーンアップ関数
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, []); // マウント時に一度だけ実行
 
   // 底辺または高さが変更されたときに面積を再計算
   useEffect(() => {
