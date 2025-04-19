@@ -7,8 +7,7 @@ import GridTab from "./components/GridTab"; // GridTabコンポーネントを�
 import GridDecompositionTab from "./components/GridDecompositionTab"; // GridDecompositionTabコンポーネントをインポート
 import TriangleAreaTab from "./components/TriangleAreaTab"; // TriangleAreaTabコンポーネントをインポート
 
-// 他のタブコンポーネントも将来的にインポートする
-// import TimeAndSpeedTab from "./components/TimeAndSpeedTab";
+// 他のタブコンポーネントが必要な場合はここにインポートする
 
 function App() {
   const [activeTab, setActiveTab] = useState(0); // 初期タブをグリッドタブに設定
@@ -25,12 +24,7 @@ function App() {
       id: 2,
       label: "面積(三角形)",
       component: <TriangleAreaTab />,
-    }, // Step 8-1 で実装
-    {
-      id: 3,
-      label: "時間と速度",
-      component: <p>時間と速度タブ Content (仮)</p>,
-    }, // Step 9 で実装
+    }, // Step 8-3 まで実装済み
   ];
 
   return (
